@@ -10,6 +10,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Application.Api.GraphQL.Queries;
+using Application.Abstractions.Interfaces;
+using Application.Domain.Repositories;
+using Application.Domain.Entities;
 
 namespace Application.Api
 {
@@ -21,21 +25,28 @@ namespace Application.Api
         {
             // If you need dependency injection with your query object add your query type as a services.
             // services.AddSingleton<Query>();
+            services.AddTransient<IDeliveryQueriesRepository, DeliveryQueriesRepository>();
             services
                 .AddRouting()
                 .AddGraphQLServer()
-                .AddQueryType<Query>();
+                .AddQueryType<DeliveryQueries>()
+                .AddType<Restaurant>()
+                .AddType<Food>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+             
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             
             app.UseRouting();
+
+            
             app.UseEndpoints(endpoints =>
             {
                 // By default the GraphQL server is mapped to /graphql
@@ -43,10 +54,8 @@ namespace Application.Api
                 // the GraphQL IDE use endpoints.MapGraphQL().WithToolOptions(...).
                 endpoints.MapGraphQL();
                 
+                
             });
-            
-               
-            
         }
     }
 }
