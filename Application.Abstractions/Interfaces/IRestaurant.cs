@@ -1,6 +1,6 @@
 namespace Application.Abstractions.Interfaces
 {
-    public interface IRestaurant : ISearchResult
+    public interface IRestaurant 
     {
         string Name {get; set;}
         string City {get; set;}

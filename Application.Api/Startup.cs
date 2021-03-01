@@ -2,60 +2,58 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HotChocolate.AspNetCore;
-using HotChocolate.AspNetCore.Voyager;
-using HotChocolate.AspNetCore.Playground;
+using Application.Abstractions.Interfaces;
+using Application.Api.Controllers;
+using Application.Domain.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Application.Api.GraphQL.Queries;
-using Application.Abstractions.Interfaces;
-using Application.Domain.Repositories;
-using Application.Domain.Entities;
+using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 
 namespace Application.Api
 {
     public class Startup
     {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // If you need dependency injection with your query object add your query type as a services.
-            // services.AddSingleton<Query>();
             services.AddTransient<IDeliveryQueriesRepository, DeliveryQueriesRepository>();
-            services
-                .AddRouting()
-                .AddGraphQLServer()
-                .AddQueryType<DeliveryQueries>()
-                .AddType<Restaurant>()
-                .AddType<Food>();
+            services.AddControllers();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Delivery App Backend", Version = "v1"});
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-             
-            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Delivery App Backend"));
             }
-            
+
+            app.UseHttpsRedirection();
+
             app.UseRouting();
 
-            
-            app.UseEndpoints(endpoints =>
-            {
-                // By default the GraphQL server is mapped to /graphql
-                // This route also provides you with our GraphQL IDE. In order to configure the
-                // the GraphQL IDE use endpoints.MapGraphQL().WithToolOptions(...).
-                endpoints.MapGraphQL();
-                
-                
-            });
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

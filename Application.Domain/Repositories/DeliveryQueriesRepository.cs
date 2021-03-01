@@ -8,16 +8,12 @@ namespace Application.Domain.Repositories
     {
         public IEnumerable<IFood> GetAllFoods(string restaurant)
         {
-            yield return new Food("Pizza", 50.00);
+            yield return new Food("Pizza", "50.00");
         }
 
         public IEnumerable<IRestaurant> GetAllRestaurants(string city)
         {
-            yield return new Restaurant
-            {
-                Name = "Pizza na Brasa",
-                City = "Florianopolis, Brazil"
-            };
+            yield return new Restaurant("Pizza na Brasa", "Florianopolis, Brazil");
         }
     }
 }

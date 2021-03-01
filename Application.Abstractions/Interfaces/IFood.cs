@@ -1,8 +1,8 @@
 namespace Application.Abstractions.Interfaces
 {
-    public interface IFood : ISearchResult
+    public interface IFood 
     {
         string Name{get; set;}
-        double Price {get; set;}
+        string Price {get; set;}
     }
 }

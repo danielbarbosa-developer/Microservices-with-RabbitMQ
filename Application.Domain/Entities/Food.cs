@@ -5,12 +5,12 @@ namespace Application.Domain.Entities
     public class Food : IFood
     {
 
-        public Food(string name, double price)
+        public Food(string name, string price)
         {
             this.Name = name;
             this.Price = price;
         }
         public string Name { get; set; }
-        public double Price { get; set; }
+        public string Price { get; set; }
     }
 }
